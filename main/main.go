@@ -11,7 +11,8 @@ import (
 
 /**
  * wocker version -v    输出版本号
- * wocker build -n container_name -p prot:port  开放容器内外端口映射
+ * wocker run -n container_name -p prot:port      创建容器
+ * wocker network -n network_name -p port:port    创建bridge网络
  * 达成目标: 
  *	   linux底层的namespaces隔离和cgroups隔离;
  *     为隔离后的容器添加属于自己的ip
@@ -21,10 +22,10 @@ import (
 
 func main() {
 	var cmd *exec.Cmd;
-	if len(os.Args) == 1 {
+	if len(os.Args) < 2 {
 		fmt.Println("please input command!\n");
 	} else {
-		cmd = exec.Command("/bin/sh", "-c", Array2String(os.Args[1:]));
+		cmd = exec.Command("/bin/bash", "-c", Array2String(os.Args[1:]));
 		if out, err := cmd.Output(); err != nil {
 			//err情况下,分为两种情况:wocker开头与其他linux识别不了的模式开头
 			if os.Args[1] == "wocker" {
@@ -34,7 +35,8 @@ func main() {
 				//业务层,根据指令进行判断.注意包的循环引用问题的发生,业务层不能既用来做全局动作,又用来分发任务
 				switch(flagstr.Command) {
 					case "version": flag.ShowVersion(); break;
-					case "build": build.Build(flagstr);break;      
+					case "run": build.Build(flagstr);break;
+					case "network": build.Build(flagstr);break;      
 					default: fmt.Println("cmd developing"); break;
 				}
 			} else {

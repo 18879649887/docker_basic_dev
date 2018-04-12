@@ -1,12 +1,17 @@
 package build
 
 import (
-	"fmt"
 	"../flag"
-	"syscall"
-	"../net"
+	"../container"
+	"../network"
 )
 
 func Build(flagstring *flag.SFlag) {
-	//利用解析过来的参数=>构建namespace,查看cgroups分配资源的规则,构建虚拟容器内网络的互通
+	name, port1, port2 := flag.CheckParams(flagstring);
+	
+	switch(flagstring.Command) {
+		case "network": network.CreateNetwork(name, port1, port2); break;
+		case "run": container.CreateContainer(name); break;
+		default: break;
+	}
 }
